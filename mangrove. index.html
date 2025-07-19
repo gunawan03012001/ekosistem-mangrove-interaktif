@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penjaga Pesisir: Ekosistem Mangrove</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earthy Harmony -->
+    <!-- Application Structure Plan: The application is structured as a single-page narrative with a sticky top navigation bar for easy access to all sections. The flow is: Hero -> The Vital Role -> Threats -> Solutions -> Local Species -> Action Framework. The new 'Action Framework' section logically groups Policy/Regulation and Balanced Education, positioning them as forward-looking strategies. This enhances the user journey from understanding the problem to exploring concrete actions. The navigation bar significantly improves usability for a content-rich page. -->
+    <!-- Visualization & Content Choices: 
+        - Role of Mangroves: Inform -> Interactive Tabs -> Presents the three core functions separately for clarity. Justification: Avoids a long block of text. Method: JS-powered tabs.
+        - Carbon Sequestration: Compare -> Bar Chart -> Visually demonstrates the superior carbon storage of mangroves. Justification: High impact visual comparison. Library: Chart.js.
+        - Threats: Compare -> Doughnut Chart -> Shows the relative contribution of different threats. Justification: Easy to understand proportions. Library: Chart.js.
+        - Solutions & Species: Organize -> Accordions & Clickable Cards -> Breaks down complex information into digestible, user-initiated reveals. Justification: Reduces cognitive load. Method: JS handlers.
+        - NEW - Action Framework (Policy): Organize -> HTML/CSS Cards -> Presents different policy instruments in a visually distinct grid. Justification: Better than a list for comparing elements. Method: Styled HTML.
+        - NEW - Action Framework (Education): Compare/Organize -> Two-column Layout -> Highlights the need to balance ecological and economic needs. Justification: Visually reinforces the concept of balance. Method: Styled HTML (Flexbox).
+        - All choices adhere to the NO SVG/Mermaid constraint. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #334155;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        .nav-button.active {
+            background-color: #059669;
+            color: #ffffff;
+        }
+        .nav-button:not(.active):hover {
+            background-color: #d1fae5;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            border-bottom-color: #059669;
+            color: #059669;
+            font-weight: 700;
+        }
+        .accordion-header {
+            transition: background-color 0.3s ease;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .species-card.active .species-details {
+            max-height: 500px;
+            opacity: 1;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .species-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <nav id="navbar" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="hidden md:flex justify-center items-center space-x-2 py-2">
+                <a href="#peran" class="nav-button">Peran Vital</a>
+                <a href="#ancaman" class="nav-button">Ancaman</a>
+                <a href="#solusi" class="nav-button">Solusi</a>
+                <a href="#spesies" class="nav-button">Spesies Lokal</a>
+                <a href="#aksi" class="nav-button">Kerangka Aksi</a>
+            </div>
+             <div class="md:hidden text-center py-3">
+                <span class="font-bold text-emerald-700">Penjaga Pesisir: Ekosistem Mangrove</span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-emerald-700 text-white text-center py-20 px-4">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Ekosistem Mangrove: Penjaga Pesisir Kita</h1>
+        <p class="text-lg md:text-xl max-w-3xl mx-auto">Sebuah eksplorasi interaktif tentang peran vital, ancaman, dan solusi untuk pelestarian hutan mangrove di Indonesia.</p>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <section id="peran" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Peran Multifungsi yang Tak Tergantikan</h2>
+            <p class="text-center max-w-3xl mx-auto mb-8 text-slate-600">
+                Ekosistem mangrove bukan hanya sekumpulan pohon di tepi pantai. Mereka adalah sistem pendukung kehidupan yang kompleks dengan tiga peran utama. Jelajahi setiap peran untuk memahami mengapa mangrove begitu penting bagi keseimbangan lingkungan pesisir dan kehidupan kita.
+            </p>
+            <div class="max-w-4xl mx-auto">
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="-mb-px flex justify-center space-x-4 md:space-x-8" aria-label="Tabs">
+                        <button class="tab-button active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg" data-tab="pelindung">
+                            ??? Pelindung Pantai
+                        </button>
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-lg" data-tab="karbon">
+                            ?? Penyerap Karbon
+                        </button>
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-lg" data-tab="hayati">
+                            ?? Rumah Keanekaragaman Hayati
+                        </button>
+                    </nav>
+                </div>
+                <div id="tab-content" class="bg-white p-6 rounded-lg shadow-md">
+                    <div id="pelindung" class="tab-panel">
+                        <h3 class="text-xl font-bold mb-3 text-emerald-700">Benteng Pertahanan Alami</h3>
+                        <p class="text-slate-600">Akar mangrove yang rapat dan kokoh bekerja seperti perisai raksasa. Mereka memecah energi ombak, mengurangi dampak abrasi, dan menjadi garis pertahanan pertama saat terjadi badai atau bahkan tsunami. Tanpa mangrove, banyak wilayah pesisir akan rentan terhadap erosi dan kerusakan akibat gelombang laut.</p>
+                    </div>
+                    <div id="karbon" class="tab-panel hidden">
+                        <h3 class="text-xl font-bold mb-3 text-emerald-700">Pahlawan Iklim Penyimpan Karbon</h3>
+                        <p class="text-slate-600 mb-4">Mangrove adalah juara dalam menyerap karbon dioksida (CO2) dari atmosfer, gas rumah kaca utama penyebab perubahan iklim. Mereka mampu menyimpan karbon 3-5 kali lebih banyak per hektar dibandingkan hutan hujan tropis. Pelestarian mangrove adalah langkah konkret dalam mitigasi perubahan iklim global.</p>
+                        <div class="chart-container">
+                            <canvas id="carbonChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="hayati" class="tab-panel hidden">
+                        <h3 class="text-xl font-bold mb-3 text-emerald-700">Surga bagi Beragam Makhluk Hidup</h3>
+                        <p class="text-slate-600">Ekosistem mangrove adalah "rumah" yang sibuk. Ia menjadi tempat berlindung, mencari makan, dan berkembang biak (nursery ground) bagi ribuan spesies, termasuk ikan, kepiting, udang, moluska, dan burung. Kesehatan mangrove secara langsung mendukung industri perikanan dan menjaga keseimbangan rantai makanan laut.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ancaman" class="mb-16 scroll-mt-20 bg-slate-100 py-12 rounded-lg">
+             <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Ancaman Nyata di Depan Mata</h2>
+             <p class="text-center max-w-3xl mx-auto mb-8 text-slate-600">
+                Di balik perannya yang krusial, ekosistem mangrove menghadapi tekanan berat yang mengancam keberadaannya. Ancaman ini sebagian besar berasal dari aktivitas manusia yang tidak berkelanjutan. Memahami sumber ancaman adalah langkah pertama untuk menemukan solusi yang efektif.
+            </p>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                <div class="w-full md:w-1/2">
+                    <div class="chart-container">
+                        <canvas id="threatsChart"></canvas>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 max-w-md">
+                    <div class="space-y-4">
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h4 class="font-bold text-red-600">Konversi Lahan & Deforestasi</h4>
+                            <p class="text-sm text-slate-600">Pembukaan hutan mangrove untuk tambak, perkebunan, dan pembangunan infrastruktur adalah penyebab utama hilangnya mangrove di seluruh dunia.</p>
+                        </div>
+                         <div class="p-4 bg-white rounded-lg shadow">
+                            <h4 class="font-bold text-yellow-600">Polusi</h4>
+                            <p class="text-sm text-slate-600">Limbah industri, pertanian, dan rumah tangga yang dibuang ke sungai dan laut dapat meracuni ekosistem mangrove, menghambat pertumbuhan dan membunuh biota di dalamnya.</p>
+                        </div>
+                         <div class="p-4 bg-white rounded-lg shadow">
+                            <h4 class="font-bold text-blue-600">Perubahan Iklim</h4>
+                            <p class="text-sm text-slate-600">Kenaikan permukaan air laut dapat menenggelamkan hutan mangrove, sementara perubahan suhu dan salinitas mengganggu keseimbangan ekosistem yang rapuh ini.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solusi" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Solusi Ada di Tangan Kita</h2>
+            <p class="text-center max-w-3xl mx-auto mb-8 text-slate-600">
+                Melestarikan mangrove membutuhkan kerja sama dari semua pihak. Dari masyarakat lokal hingga pemerintah, dari praktik tradisional hingga teknologi modern, berbagai solusi dapat diimplementasikan untuk melindungi dan memulihkan ekosistem berharga ini. Bagian ini menguraikan berbagai pendekatan dan strategi yang dapat kita ambil bersama.
+            </p>
+            <div class="max-w-4xl mx-auto space-y-4">
+                <div class="accordion-item bg-white border border-gray-200 rounded-lg">
+                    <button class="accordion-header w-full flex justify-between items-center text-left p-4 font-semibold text-lg hover:bg-gray-50">
+                        <span>?? Keterlibatan Masyarakat Lokal</span>
+                        <span class="transform transition-transform duration-300">?</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-slate-600">
+                        <p>Masyarakat lokal adalah garda terdepan konservasi. Keterlibatan mereka adalah kunci keberhasilan jangka panjang. Pemberdayaan komunitas melalui edukasi, pembentukan kelompok sadar lingkungan, dan partisipasi aktif dalam perencanaan dan implementasi program konservasi akan menumbuhkan rasa memiliki dan tanggung jawab. Ketika masyarakat merasakan manfaat langsung dari mangrove yang lestari, mereka akan menjadi pelindung terbaiknya.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-white border border-gray-200 rounded-lg">
+                    <button class="accordion-header w-full flex justify-between items-center text-left p-4 font-semibold text-lg hover:bg-gray-50">
+                        <span>?? Manfaat Ekonomi Berkelanjutan</span>
+                        <span class="transform transition-transform duration-300">?</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-slate-600">
+                        <p>Konservasi tidak harus bertentangan dengan ekonomi. Justru, mangrove yang sehat membuka peluang ekonomi hijau. <strong>Ekowisata</strong> (tur perahu, jembatan titian, pengamatan satwa), <strong>perikanan berkelanjutan</strong> (hasil tangkapan yang melimpah karena habitat sehat), dan pengembangan <strong>produk turunan mangrove</strong> (madu, sirup, kerajinan) adalah contoh nyata bahwa pelestarian alam dapat mensejahterakan masyarakat.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-white border border-gray-200 rounded-lg">
+                    <button class="accordion-header w-full flex justify-between items-center text-left p-4 font-semibold text-lg hover:bg-gray-50">
+                        <span>?? Teknik Reboisasi yang Efektif</span>
+                        <span class="transform transition-transform duration-300">?</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-slate-600">
+                        <p>Menanam kembali mangrove tidak bisa asal-asalan. Keberhasilan reboisasi bergantung pada pendekatan yang ilmiah dan terencana. Berikut adalah langkah-langkah kunci:</p>
+                        <ol class="list-decimal list-inside mt-4 space-y-2">
+                            <li><strong>Pemilihan Lokasi Tepat:</strong> Menganalisis kondisi pasang surut, salinitas, dan jenis tanah untuk memastikan kesesuaian dengan spesies yang akan ditanam.</li>
+                            <li><strong>Pemilihan Bibit Unggul:</strong> Menggunakan bibit yang sehat dan berasal dari sumber lokal untuk daya adaptasi yang lebih baik.</li>
+                            <li><strong>Teknik Penanaman yang Benar:</strong> Memastikan bibit ditanam dengan kedalaman yang cukup dan perlindungan awal dari arus atau hama.</li>
+                            <li><strong>Pemantauan & Perawatan:</strong> Melakukan monitoring rutin pasca-tanam untuk mengganti bibit yang mati dan memastikan pertumbuhan optimal.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                 <div class="accordion-item bg-white border border-gray-200 rounded-lg">
+                    <button class="accordion-header w-full flex justify-between items-center text-left p-4 font-semibold text-lg hover:bg-gray-50">
+                        <span>??? Inovasi Teknologi untuk Konservasi</span>
+                        <span class="transform transition-transform duration-300">?</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-slate-600">
+                        <p>Teknologi modern menawarkan alat bantu yang kuat untuk upaya konservasi. <strong>Drone</strong> dapat digunakan untuk pemetaan area, pemantauan kesehatan hutan, hingga penyebaran bibit di lokasi sulit. <strong>Citra satelit</strong> membantu melacak deforestasi secara luas dan real-time. <strong>Aplikasi seluler</strong> dapat melibatkan publik dalam pelaporan (citizen science) dan edukasi. Teknologi ini mempercepat dan meningkatkan efektivitas kerja-kerja konservasi di lapangan.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="spesies" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Kenali Spesies Mangrove Lokal</h2>
+            <p class="text-center max-w-3xl mx-auto mb-8 text-slate-600">Setiap spesies mangrove memiliki karakteristik unik yang memungkinkannya beradaptasi dengan lingkungan pesisir yang keras. Mengenal beberapa spesies dominan membantu kita memahami kompleksitas dan ketangguhan ekosistem ini. Klik pada setiap kartu untuk melihat detailnya.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="species-card border rounded-lg overflow-hidden shadow-sm cursor-pointer bg-white">
+                    <div class="p-4">
+                        <h4 class="font-bold text-xl text-emerald-800">Rhizophora sp. (Bakau)</h4>
+                        <p class="text-sm text-slate-500">Si Arsitek Pesisir</p>
+                    </div>
+                    <div class="species-details px-4 text-slate-600">
+                        <p><strong>Ciri Khas:</strong> Memiliki akar tunjang yang kokoh dan bercabang-cabang, mencuat dari batang ke dalam lumpur. Akar ini berfungsi untuk menopang pohon di tanah yang labil dan membantu pernapasan.</p>
+                        <p class="mt-2"><strong>Peran:</strong> Sangat efektif dalam menahan abrasi dan menjebak sedimen, membantu pembentukan daratan baru.</p>
+                    </div>
+                </div>
+                <div class="species-card border rounded-lg overflow-hidden shadow-sm cursor-pointer bg-white">
+                    <div class="p-4">
+                        <h4 class="font-bold text-xl text-emerald-800">Avicennia sp. (Api-api)</h4>
+                        <p class="text-sm text-slate-500">Sang Perintis di Garis Depan</p>
+                    </div>
+                    <div class="species-details px-4 text-slate-600">
+                        <p><strong>Ciri Khas:</strong> Dikenali dengan akar napasnya yang berbentuk seperti pensil atau jari, mencuat vertikal ke atas dari dalam lumpur. Akar ini berfungsi untuk mengambil oksigen.</p>
+                        <p class="mt-2"><strong>Peran:</strong> Seringkali menjadi spesies pertama yang tumbuh di area lumpur baru di tepi laut, menjadikannya pionir dalam formasi hutan mangrove.</p>
+                    </div>
+                </div>
+                <div class="species-card border rounded-lg overflow-hidden shadow-sm cursor-pointer bg-white">
+                    <div class="p-4">
+                        <h4 class="font-bold text-xl text-emerald-800">Sonneratia sp. (Pedada)</h4>
+                        <p class="text-sm text-slate-500">Penyedia Nektar</p>
+                    </div>
+                    <div class="species-details px-4 text-slate-600">
+                        <p><strong>Ciri Khas:</strong> Memiliki akar napas yang lebih besar dan berbentuk kerucut. Bunganya yang besar dan mekar di malam hari menjadi sumber nektar bagi kelelawar dan serangga.</p>
+                        <p class="mt-2"><strong>Peran:</strong> Buahnya sering dimanfaatkan oleh masyarakat lokal, dan bunganya berperan penting dalam penyerbukan ekosistem.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="aksi" class="mb-16 scroll-mt-20 bg-emerald-50 py-12 rounded-lg">
+             <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Kerangka Aksi: Kebijakan & Edukasi</h2>
+             <p class="text-center max-w-3xl mx-auto mb-8 text-slate-600">
+                Upaya konservasi yang berhasil membutuhkan fondasi yang kuat. Fondasi ini dibangun di atas dua pilar utama: kerangka kebijakan yang mendukung dari atas (top-down) dan program edukasi yang memberdayakan dari bawah (bottom-up). Keduanya harus berjalan beriringan untuk menciptakan dampak yang lestari.
+            </p>
+            <div class="max-w-5xl mx-auto">
+                <h3 class="text-2xl font-bold text-center mb-6 text-emerald-700">Pilar 1: Kebijakan dan Regulasi yang Mendukung</h3>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-emerald-600">
+                        <h4 class="font-bold text-lg mb-2">RTRW (Tata Ruang)</h4>
+                        <p class="text-slate-600 text-sm">Mengalokasikan zona pesisir sebagai kawasan lindung mangrove dalam Rencana Tata Ruang Wilayah (RTRW) adalah langkah hukum fundamental untuk mencegah konversi lahan.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-emerald-600">
+                        <h4 class="font-bold text-lg mb-2">Peraturan Daerah (Perda)</h4>
+                        <p class="text-slate-600 text-sm">Perda spesifik tentang perlindungan mangrove memberikan dasar hukum yang kuat untuk penegakan, sanksi bagi pelanggar, dan insentif bagi pegiat konservasi.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-emerald-600">
+                        <h4 class="font-bold text-lg mb-2">Program Rehabilitasi</h4>
+                        <p class="text-slate-600 text-sm">Inisiasi program rehabilitasi dan restorasi oleh pemerintah, yang didukung anggaran dan tenaga ahli, sangat penting untuk memulihkan area mangrove yang telah rusak.</p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-center mb-6 text-emerald-700">Pilar 2: Edukasi yang Seimbang</h3>
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col md:flex-row items-center gap-6">
+                    <div class="w-full md:w-2/5 text-center md:text-left">
+                        <h4 class="font-bold text-lg mb-2">Menyampaikan "Mengapa"</h4>
+                        <p class="text-slate-600 text-sm">Edukasi harus fokus pada penyadartahuan akan peran vital mangrove bagi perlindungan dari bencana, sumber mata pencaharian (perikanan), dan kesehatan lingkungan jangka panjang.</p>
+                    </div>
+                    <div class="w-1/5 flex justify-center">
+                        <span class="text-4xl font-bold text-emerald-500">+</span>
+                    </div>
+                    <div class="w-full md:w-2/5 text-center md:text-left">
+                         <h4 class="font-bold text-lg mb-2">Memberikan "Bagaimana"</h4>
+                        <p class="text-slate-600 text-sm">Edukasi harus seimbang dengan memberikan solusi ekonomi alternatif dan berkelanjutan, seperti pelatihan ekowisata atau budidaya ramah lingkungan, sehingga masyarakat tidak merasa kebutuhan ekonominya dikesampingkan.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white py-8 text-center">
+        <p class="font-semibold">Mari bersama menjaga dan melestarikan mangrove.</p>
+        <p class="text-sm text-slate-400 mt-2">Masa depan pesisir dan planet kita bergantung padanya.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const target = tab.getAttribute('data-tab');
+                    
+                    tabPanels.forEach(panel => {
+                        if (panel.id === target) {
+                            panel.classList.remove('hidden');
+                        } else {
+                            panel.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const accordions = document.querySelectorAll('.accordion-item');
+            accordions.forEach(accordion => {
+                const header = accordion.querySelector('.accordion-header');
+                const content = accordion.querySelector('.accordion-content');
+                const icon = header.querySelector('span:last-child');
+                
+                header.addEventListener('click', () => {
+                    const wasOpen = content.style.maxHeight;
+                    accordions.forEach(otherAccordion => {
+                        otherAccordion.querySelector('.accordion-content').style.maxHeight = null;
+                        otherAccordion.querySelector('.accordion-header span:last-child').style.transform = 'rotate(0deg)';
+                    });
+
+                    if (!wasOpen) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            const speciesCards = document.querySelectorAll('.species-card');
+            speciesCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const wasActive = card.classList.contains('active');
+                    speciesCards.forEach(c => c.classList.remove('active'));
+                    if (!wasActive) {
+                        card.classList.add('active');
+                    }
+                });
+            });
+            
+            const carbonCtx = document.getElementById('carbonChart').getContext('2d');
+            new Chart(carbonCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Hutan Mangrove', 'Hutan Hujan Tropis', 'Hutan Boreal'],
+                    datasets: [{
+                        label: 'Penyimpanan Karbon (ton/ha)',
+                        data: [1023, 450, 250],
+                        backgroundColor: ['#059669', '#10b981', '#6ee7b7'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Kapasitas Penyimpanan Karbon Hutan' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e5e7eb' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            const threatsCtx = document.getElementById('threatsChart').getContext('2d');
+            new Chart(threatsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Konversi Lahan & Deforestasi', 'Polusi & Degradasi', 'Perubahan Iklim & Lainnya'],
+                    datasets: [{
+                        label: 'Sumber Ancaman Utama',
+                        data: [60, 25, 15],
+                        backgroundColor: ['#dc2626', '#f59e0b', '#3b82f6'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: 'Proporsi Ancaman Terhadap Mangrove' }
+                    }
+                }
+            });
+            
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('#navbar .nav-button');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
